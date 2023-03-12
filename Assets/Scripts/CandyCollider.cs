@@ -16,15 +16,18 @@ public class CandyCollider : MonoBehaviour
         
     }
 
+    /*
+     * Defining the OnTriggerEnter2D function to Provide functionality when AThe Candy Collided with the player (Both Player and Candy are RigidBody)
+     */
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        //If Collision is Made, then destroying the Candy Game Object, and Increasing the Score.
         if (collision.gameObject.tag.Equals("Player"))
         {
             /*
              * Increse Score.
              * Destroy Object.
              */
-
             GameManager.gameManager.IncrementScore();
 
             Destroy(gameObject);
@@ -32,9 +35,7 @@ public class CandyCollider : MonoBehaviour
         }
         else 
         {
-            /*
-             * Decrease Score, when out of Bounds.
-             */
+            //Do nothing here
         }
     }
 }

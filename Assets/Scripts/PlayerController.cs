@@ -9,12 +9,16 @@ public class PlayerController : MonoBehaviour
      * This Exposes the private field to the inspector.
      */
     [SerializeField]
-    float MoveSpeed;
+    float MoveSpeed; //MoveSpeed of Player
 
     [SerializeField]
-    float maxPos;
+    float maxPos; //Max Position the player can move in Both Directions in X- axis.
 
-    readonly bool canMove = true;
+    /*
+     * Restricting Movement of player by this Variable value.
+     * Exposed it to other classes for changing it.
+     */
+    public bool canMove = true;
 
     // Start is called before the first frame update
     void Start()
@@ -25,7 +29,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        //Checking the state of the Movement condition variable.
         if (canMove)
         {
             Move();
@@ -33,8 +37,14 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    /*
+     * Move Function to Move player.
+     */
     private void Move()
     {
+        /*
+         * Gets the Input from KeyBoard Arrow Keys for Horizontal Axis.
+         */
         float InputX = Input.GetAxis("Horizontal");
 
         /*
@@ -45,6 +55,7 @@ public class PlayerController : MonoBehaviour
          */
         transform.position += InputX * MoveSpeed * Time.deltaTime * Vector3.right;
 
+        //Clamping the Position to restrict the user from going out of bounds.
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, -maxPos, maxPos), transform.position.y, transform.position.z);
             
 
