@@ -1,6 +1,6 @@
 # Candy-Catch
 Just a Simple 2D Candy Catch Game  
----------------------------Update--------------------------  
+---------------------------Update Start--------------------------  
 13.03.2023 Game Version 1 has been fully developed. [Its Full files are available in Candy-Catch-Main-Application Folder.]  
------------------------------------------------------------  
+---------------------------Update End------------------------------  
 This is Version2.
