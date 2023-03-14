@@ -6,6 +6,10 @@ TagManager:
   tags:
   - BackGround
   - CandySpawner
+  - SpeedCandy
+  - SizeCandy
+  - NormalCandy
+  - BombCandy
   layers:
   - Default
   - TransparentFX

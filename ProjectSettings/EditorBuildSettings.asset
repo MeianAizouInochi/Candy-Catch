@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
-    guid: 2536653e3724b89498cb92cc5da17b13
+    path: Assets/Scenes/MainMenu.unity
+    guid: 954bb806c77cfb746b368a8d2f2ffece
   - enabled: 1
     path: Assets/Scenes/Candy-Catch.unity
     guid: 2cda990e2423bbf4892e6590ba056729
