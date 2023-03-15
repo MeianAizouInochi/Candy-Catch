@@ -18,20 +18,17 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float MaxYPos;
 
-
     /*
      * To Allow and DisAllow Movement.
      */
     public bool CanMove = true;
-
-
 
     /*
      * After Object is Instantiated, Awake is called once throughout its lifecycle.
      */
     private void Awake()
     {
-        PlayerMoveSpeed = 20;
+        PlayerMoveSpeed = 17.0f;
     }
 
     // Start is called before the first frame update
@@ -109,7 +106,9 @@ public class PlayerController : MonoBehaviour
             case "SizeCandy":
                 {
                     //Increase Size of Players collider.
-                    GameManager.gameManager.ScoreIncrementor(); //temporary calling.
+                    StopSizeUp();
+
+                    StartSizeUp();
 
                     Destroy(collision.gameObject);
 
@@ -152,9 +151,52 @@ public class PlayerController : MonoBehaviour
     {
         StopCoroutine("StartTimeForSpeedUp");
 
-        if (PlayerMoveSpeed > 20.0f)
+        if (PlayerMoveSpeed > 17.0f)
         {
-            PlayerMoveSpeed = 20.0f;
+            PlayerMoveSpeed = 17.0f;
         }
+    }
+
+    /*
+     * This is a Coroutine to Increase the Size of the Player for 10 seconds.
+     */
+    IEnumerator StartTimerForSizeUp() 
+    {
+        float TimePassedSize = 0.0f;
+
+        gameObject.transform.localScale *= 2;
+
+        gameObject.GetComponent<CircleCollider2D>().radius *= 2.0f;
+
+        while (TimePassedSize < 10.0f)
+        {
+            TimePassedSize += Time.deltaTime;
+
+            yield return null;
+        }
+
+        gameObject.transform.localScale /= 2;
+
+        gameObject.GetComponent<CircleCollider2D>().radius /= 2.0f;
+    }
+
+    /*
+     * Function to start the above Coroutine
+     */
+    public void StartSizeUp() 
+    {
+        StartCoroutine("StartTimerForSizeUp");
+    }
+
+    /*
+     * Function to stop the above the coroutine.
+     */
+    public void StopSizeUp() 
+    {
+        StopCoroutine("StartTimerForSizeUp");
+
+        gameObject.transform.localScale = new Vector3(1.0f,1.0f,1.0f);
+
+        gameObject.GetComponent<CircleCollider2D>().radius = 0.3814228f;
     }
 }
