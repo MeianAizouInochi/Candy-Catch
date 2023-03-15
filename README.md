@@ -9,4 +9,4 @@ Version2 got Updated.
 Testing Version got Some info Left out inside the Game:  
 1. Every 5 Points Player Gathers Gives +1 Live.  
 2. Every Candy that player Looses Reduces Live by 1.  
-
+3. User can Controll the Monster Character by Arrow Keys or "WASD" keys from Keyboard.  
