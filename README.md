@@ -10,3 +10,5 @@ Testing Version got Some info Left out inside the Game:
 1. Every 5 Points Player Gathers Gives +1 Live.  
 2. Every Candy that player Looses Reduces Live by 1.  
 3. User can Controll the Monster Character by Arrow Keys or "WASD" keys from Keyboard.  
+4. The Speed Candy Starts Spawning after 20 points.  
+5. The Size Candy Starts Spawning after 50 points.  
