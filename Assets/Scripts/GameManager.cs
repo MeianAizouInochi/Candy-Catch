@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -137,6 +139,9 @@ public class GameManager : MonoBehaviour
 
         TextMeshProUGUI[] Texts = GameOverUI.GetComponentsInChildren<TextMeshProUGUI>(); //Getting the Required Objects where the Current Player data is stored.
 
+
+
+
         //Displaying the data in the Game Over Panel UI.
         foreach (TextMeshProUGUI Value in Texts)
         {
@@ -183,5 +188,36 @@ public class GameManager : MonoBehaviour
     public void GoToMainMenu() 
     {
         SceneManager.LoadScene("MainMenu");
+    }
+
+    /*
+     * Function to Save Score.
+     */
+    public void SaveScore() 
+    {
+        /*
+         * Need to create a Folder PlayerData storage
+         * Need to check if 3 Files with the Prefix PlayerData Exists or Not,
+         * If Exists, then ask user to delete one, then try saving.
+         * Else Just save and Change Sprite of the Button to Green
+         * 
+         * Provide a Option in Main Menu to Interact with the Saved Player Data.
+         */
+        PlayerGameData playergamedata = new PlayerGameData(Score, ElapsedTime);
+
+        BinaryFormatter binaryFormatter= new BinaryFormatter();
+
+        DateTime dateTime = DateTime.Now;
+
+        string Date_Time = dateTime.ToString("MM-dd-yyyy-hh-mm-ss-tt");
+
+        print(Date_Time);
+
+        string filename = "PlayerData" + Date_Time + ".dat";
+
+        using (FileStream f = new FileStream(filename, FileMode.Create))
+        {
+            binaryFormatter.Serialize(f, playergamedata);
+        }
     }
 }
