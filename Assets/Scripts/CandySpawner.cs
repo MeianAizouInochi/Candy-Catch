@@ -23,7 +23,7 @@ public class CandySpawner : MonoBehaviour
      * Need to change this before deployment.
      */
     [SerializeField]
-    GameObject[] Candies;
+    public GameObject[] Candies;
 
     /*
      * Static reference to the instance of this class.
@@ -36,11 +36,16 @@ public class CandySpawner : MonoBehaviour
      */
     public int MaxExposedCandyIndex;
 
+
+    public float InitialCandySpawnTime = 2.0f; // Initial First Candy Spawn Time taken.
+
     private void Awake()
     {
         candySpawner = this;
 
         MaxExposedCandyIndex = 5;
+
+        InitialCandySpawnTime = 2.0f;
     }
 
     // Start is called before the first frame update
@@ -54,11 +59,11 @@ public class CandySpawner : MonoBehaviour
      */
     IEnumerator SpawnCandies() 
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(InitialCandySpawnTime);
 
         while (true)
         {
-            SpawnCandy();
+            SpawnCandy(); 
 
             yield return new WaitForSeconds(TimeToWait);
         }

@@ -1,0 +1,8 @@
+TimerForSpeedUp Coroutine (Depends on Time)
+
+TimeForSizeUp Coroutine (Depends on Time)
+
+SpawnCandy Coroutine (Doesn't depend on Time, Just Spawns Candy after 1 seconds after Spawning first. Initial Wait Time is 2 seconds)
+
+GameTime Coroutine (Depends on Time)
+
