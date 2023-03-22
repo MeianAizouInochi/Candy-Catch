@@ -22,6 +22,12 @@ public class GameManager : MonoBehaviour
 
     private List<Vector2> Velocities; //Storage for the Candy Velocities.
 
+    private string PlayerDataFolderPath = "Player-Data-Folder";
+
+    private string PLayerDataFilePathName = "Player-Data";
+
+    private bool canSave = true;
+
     /*----------------------------------------------------------------------Public Variables--------------------------------------------------------------------------*/
 
     public TextMeshProUGUI ScoreText; //Takes the Reference to ScorePanel Score text for UI to show Score on screen
@@ -57,6 +63,7 @@ public class GameManager : MonoBehaviour
         StartTimer(); //Starting the Timer Coroutine.
     }
 
+
     /*
      * Coroutine to Continously keep track of Elapsed time.
      */
@@ -66,11 +73,12 @@ public class GameManager : MonoBehaviour
         {
             ElapsedTime+= Time.deltaTime; //Adding to Variable elapsed time.
 
-            print(ElapsedTime); //Debugging Purpose.
+            //print(ElapsedTime); //Debugging Purpose.
 
             yield return null; //to make it pass out control for the moment.
         }
     }
+
 
     /*
      * Function to start the coroutine above.
@@ -80,6 +88,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine("GameTime"); 
     }
 
+
     /*
      * Function to stop the coroutine above.
      */
@@ -87,6 +96,7 @@ public class GameManager : MonoBehaviour
     {
         StopCoroutine("GameTime");
     }
+
 
     /*
      * Function to increment the Score of the Player.
@@ -120,6 +130,7 @@ public class GameManager : MonoBehaviour
         }   
     }
 
+
     /*
      * Function to decrement lives of the player
      */
@@ -136,6 +147,7 @@ public class GameManager : MonoBehaviour
             GameOver(); //Called Game Over if the Player lost 1 more candy while the lives are at 0.
         }
     }
+
 
     /*
      * Game Over Functionality.
@@ -167,21 +179,23 @@ public class GameManager : MonoBehaviour
                  */
                 string Unit = "SEC";
 
-                if (ElapsedTime > 60.0f)
+                float Elapsed_Time = ElapsedTime;
+
+                if (Elapsed_Time > 60.0f)
                 {
-                    ElapsedTime /= 60.0f;
+                    Elapsed_Time /= 60.0f;
 
                     Unit = "MIN";
 
-                    if (ElapsedTime > 60.0f)
+                    if (Elapsed_Time > 60.0f)
                     {
-                        ElapsedTime /= 60.0f;
+                        Elapsed_Time /= 60.0f;
 
                         Unit = "HOURS";
                     }
                 }
 
-                Value.text = Math.Round(ElapsedTime,4).ToString() + " " + Unit;
+                Value.text = Math.Round(Elapsed_Time,4).ToString() + " " + Unit;
             }
             else if(Value.name.Equals("TotalScoreText"))
             {
@@ -191,6 +205,7 @@ public class GameManager : MonoBehaviour
 
         GameOverUI.SetActive(true); //Setting the Ui active for visibility.
     }
+
 
     /*
      * Function For Restarting the Game again.
@@ -206,6 +221,7 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("Candy-Catch"); //Loading a new Candy-catch scene, while destroying the previous one.
     }
 
+
     /*
      * Function for Entering the Main Menu.
      */
@@ -216,37 +232,149 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("MainMenu");
     }
 
+
     /*
      * Function to Save Score. work is still left here.
      */
     public void SaveScore() 
     {
-        /*
-         * Need to create a Folder PlayerData storage
-         * Need to check if 3 Files with the Prefix PlayerData Exists or Not,
-         * If Exists, then ask user to delete one, then try saving.
-         * Else Just save and Change Sprite of the Button to Green
-         * 
-         * Provide a Option in Main Menu to Interact with the Saved Player Data.
-         */
-        PlayerGameData playergamedata = new PlayerGameData(Score, ElapsedTime); //Player data object is created.
-
-        BinaryFormatter binaryFormatter= new BinaryFormatter(); //Binary Formatter object.
-
-        DateTime dateTime = DateTime.Now; //Getting the current Date-Time.
-
-        string Date_Time = dateTime.ToString("MM-dd-yyyy-hh-mm-ss-tt"); //Getting its string form.
-
-        print(Date_Time); //Debugging purpose.
-
-        string filename = "PlayerData" + Date_Time + ".dat"; //Creating the storage file name.
-
-        //Storing the data after creating the above file.
-        using (FileStream f = new FileStream(filename, FileMode.Create))
+        if (canSave) // If canSave is True, only then we proceeding, hence prohibiting spamming.
         {
-            binaryFormatter.Serialize(f, playergamedata);
+            if (ManageFileFolder())
+            {
+                //Change Save Icon.
+                print("Saved!");
+            }
+            else 
+            {
+                print("Error Occured!");
+            }
         }
     }
+
+
+    /*
+     * Function for Managing The File and Folder of Player Data.
+     */
+    private bool ManageFileFolder() 
+    {
+        bool result = true; //For Checking if all operations were done successfully.
+
+        try
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(PlayerDataFolderPath + "/"); //Getting the path to the folder.
+
+            BinaryFormatter binaryFormatter = new BinaryFormatter(); //Binary Formatter for data serialization and deserialization.
+
+            //Checking Existence of the folder.
+
+            if (directoryInfo.Exists) //if exists
+            {
+                FileInfo[] filesInfo = directoryInfo.GetFiles(); //Getting the files inside it.
+
+                if (filesInfo.Length == 1) //Checking if the Number of files equals to 1.
+                {
+                    //Previous save is already there.
+
+                    bool shouldUpdate = false; //For Checking if the file should be updated.
+
+                    //Load from previous save.
+                    using (FileStream filestream = filesInfo[0].Open(FileMode.Open, FileAccess.Read))
+                    {
+                        PlayerGameData playergamedata = (PlayerGameData)binaryFormatter.Deserialize(filestream); //deserialize the data from the load.
+
+                        //store the cummulative datas.
+                        float CummulativeFileData = playergamedata.TotalScore + playergamedata.TotalAliveTime;
+
+                        float CummulativeCurrentData = Score + ElapsedTime;
+
+                        //Compare the cummulative data.
+                        if (CummulativeCurrentData > CummulativeFileData)
+                        {
+                            shouldUpdate = true; // update the shouldUpdate to true, since the new Run/Play was better than before, hence require Update.
+                        }
+                    }
+
+                    //Checking the shouldUpdate Variable.
+                    if (shouldUpdate) // if true
+                    {
+                        filesInfo[0].Delete(); //delete the previous saved file.
+
+                        PlayerGameData playergamedata = new PlayerGameData(Score, ElapsedTime); // create the new object for serialization.
+
+                        DateTime dateTime= DateTime.Now;
+
+                        string date_time = dateTime.ToString("MM-dd-yy-hh-mm-ss-tt");
+
+                        //store it by serialization..
+                        using (FileStream filestream = new FileStream(PlayerDataFolderPath + "/" + PLayerDataFilePathName + date_time, FileMode.OpenOrCreate))
+                        {
+                            binaryFormatter.Serialize(filestream, playergamedata);
+                        }
+
+                        print("Redid the previous save."); //debugging purpose.
+                    }
+
+                    //set the result to true, since either of the above otcomes is s a success.
+                    result = true;
+                }
+                else //if Number of files inside the folder is less than 1, i.e. 0.
+                {
+                    PlayerGameData playergamedata = new PlayerGameData(Score, ElapsedTime); // create the object for serialization.
+
+                    DateTime dateTime = DateTime.Now;
+
+                    string date_time = dateTime.ToString("MM-dd-yy-hh-mm-ss-tt");
+
+                    //store the data using serialization.
+                    using (FileStream filestream = new FileStream(PlayerDataFolderPath + "/" + PLayerDataFilePathName + date_time, FileMode.OpenOrCreate))
+                    {
+                        binaryFormatter.Serialize(filestream, playergamedata);
+                    }
+
+                    print("First Save");
+
+                    //set the result to true, if the above succeeds.
+                    result = true;
+                }
+            }
+            else // If the folder was not there.
+            {
+                directoryInfo.Create(); //Create the Folder.
+
+                PlayerGameData playergamedata = new PlayerGameData(Score, ElapsedTime); //create object for serialization.
+
+                DateTime dateTime = DateTime.Now;
+
+                string date_time = dateTime.ToString("MM-dd-yy-hh-mm-ss-tt");
+
+                //store the object by serialization.
+                using (FileStream filestream = new FileStream(PlayerDataFolderPath + "/" + PLayerDataFilePathName + date_time, FileMode.OpenOrCreate))
+                {
+                    binaryFormatter.Serialize(filestream, playergamedata);
+                }
+
+                print("First Save and Created a folder");
+
+                //set the result to true if the above executed properly.
+                result = true;
+            }
+        }
+        catch (Exception e) // If any exception Occurs above execute the following block.
+        {
+            print(e.Message);
+            
+            //set the result to false, for letting the player retry.
+            result = false;
+        }
+
+        //update the value of canSave, to restrict the player from saving if its already successfull once.
+        canSave = result ? false : canSave; //Update canSave depending on result.
+
+        //returning result of the function.
+        return result;
+    }
+
 
     /*
      * Function to Pause the Game.
@@ -304,10 +432,7 @@ public class GameManager : MonoBehaviour
                 CandySpawner.candySpawner.InitialCandySpawnTime = 2.0f;
 
                 PauseMenuUI.SetActive(false);
-
             }
-        }
-        
-        
+        } 
     }
 }

@@ -3184,6 +3184,7 @@ MonoBehaviour:
   LivesText: {fileID: 290182026}
   GameOverUI: {fileID: 395206250}
   PauseMenuUI: {fileID: 1782649822}
+  PlayerDataDeletionUI: {fileID: 0}
 --- !u!4 &1715927107
 Transform:
   m_ObjectHideFlags: 0
